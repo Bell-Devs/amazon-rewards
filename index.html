@@ -1,0 +1,629 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Rewards - Earn Points & Save Money</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #ff9900 0%, #ff5722 100%);
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .screenshot {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+        .browser-bar {
+            background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+            border-bottom: 1px solid #d0d0d0;
+        }
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .browser-address {
+            background-color: #ffffff;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #505050;
+        }
+        .btn-click {
+            transform: scale(0.97);
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .gift-card {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+        .gift-card-inner {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
+            border-radius: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm py-4 sticky-header">
+        <div class="container mx-auto px-4 md:px-6 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-xl font-bold text-gray-800">Amazon Rewards</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#features" class="text-gray-600 hover:text-amber-500 transition">Features</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-amber-500 transition">How It Works</a>
+                <a href="#faq" class="text-gray-600 hover:text-amber-500 transition">FAQ</a>
+            </div>
+            <button id="install-button" class="bg-amber-500 hover:bg-amber-600 text-white font-medium py-2 px-4 rounded-lg transition duration-300 shadow-md hover:shadow-lg active:btn-click">
+                Add to Browser - it's free
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white py-20">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 id="hero-heading" class="text-4xl md:text-5xl font-bold mb-6">Earn Rewards on Every Amazon Purchase</h1>
+                    <p class="text-xl mb-8">Automatically earn points, apply coupon codes, and redeem rewards with our free browser extension.</p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button id="hero-install-button" class="bg-white text-amber-500 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition duration-300 shadow-lg text-lg active:btn-click">
+                            Add to Browser - it's free
+                        </button>
+                    </div>
+                </div>
+                <div id="hero-right-content" class="md:w-1/2 flex justify-center">
+                    <!-- Default content - will be replaced by JS if campaign parameter exists -->
+                    <div class="relative">
+                        <div class="screenshot bg-white rounded-lg p-4 transform rotate-3 z-10 relative">
+                            <div class="browser-bar rounded-t-lg p-2 flex items-center">
+                                <div class="browser-dot bg-red-500"></div>
+                                <div class="browser-dot bg-yellow-500"></div>
+                                <div class="browser-dot bg-green-500"></div>
+                                <div class="browser-address flex-grow mx-2 py-1 px-3">amazon.com</div>
+                            </div>
+                            <div class="bg-gray-100 rounded-b-lg p-6">
+                                <div class="flex items-center mb-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="text-xl font-bold text-gray-800">Amazon Rewards</span>
+                                </div>
+                                <div class="bg-amber-100 rounded-lg p-4 mb-4 shadow-sm">
+                                    <div class="text-amber-800 font-bold">Points Balance: 1,250</div>
+                                    <div class="mt-2 h-3 bg-amber-200 rounded-full">
+                                        <div class="h-3 bg-amber-500 rounded-full w-3/4"></div>
+                                    </div>
+                                    <div class="mt-1 text-xs text-amber-700 text-right">75% to next reward</div>
+                                </div>
+                                <div class="bg-green-100 rounded-lg p-4 shadow-sm">
+                                    <div class="text-green-800 font-bold flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        Coupon Applied: 15% OFF
+                                    </div>
+                                    <div class="mt-2 text-sm text-green-700">You saved $12.50 on this order!</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="screenshot bg-white rounded-lg p-4 transform -rotate-2 absolute top-10 -left-10 z-0">
+                            <div class="browser-bar rounded-t-lg p-2 flex items-center">
+                                <div class="browser-dot bg-red-500"></div>
+                                <div class="browser-dot bg-yellow-500"></div>
+                                <div class="browser-dot bg-green-500"></div>
+                                <div class="browser-address flex-grow mx-2 py-1 px-3">amazon.com/rewards</div>
+                            </div>
+                            <div class="bg-gray-100 rounded-b-lg p-6">
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-lg font-bold text-gray-800">Rewards History</span>
+                                    <span class="text-sm text-amber-600 font-medium">View All</span>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                                        <div class="flex justify-between">
+                                            <div class="font-medium">Amazon Order #402-5981</div>
+                                            <div class="text-green-600 font-bold">+125 points</div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-1">June 15, 2023</div>
+                                    </div>
+                                    <div class="bg-white p-3 rounded-lg shadow-sm">
+                                        <div class="flex justify-between">
+                                            <div class="font-medium">Coupon Applied</div>
+                                            <div class="text-green-600 font-bold">Saved $12.50</div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 mt-1">June 10, 2023</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Gift card content (hidden by default, shown by JS when campaign parameter exists) -->
+                    <div id="gift-card-container" class="gift-card hidden">
+                        <div class="gift-card-inner bg-white p-6 rounded-xl">
+                            <div class="flex flex-col items-center">
+                                <!-- Amazon Gift Card SVG -->
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" class="w-full h-auto mb-4">
+                                    <rect width="200" height="120" rx="10" fill="#232F3E"/>
+                                    <path d="M20 20h160v80H20z" fill="#FFF"/>
+                                    <path d="M100 30c-22.1 0-40 17.9-40 40s17.9 40 40 40 40-17.9 40-40-17.9-40-40-40z" fill="#FF9900"/>
+                                    <path d="M110 60H90c-2.8 0-5 2.2-5 5v10c0 2.8 2.2 5 5 5h20c2.8 0 5-2.2 5-5V65c0-2.8-2.2-5-5-5z" fill="#232F3E"/>
+                                    <path d="M105 55v-5c0-2.8-2.2-5-5-5s-5 2.2-5 5v5h10z" fill="#232F3E"/>
+                                    <text x="100" y="95" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#232F3E">amazon</text>
+                                    <text x="100" y="75" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#FFFFFF">$50</text>
+                                </svg>
+                                <div class="text-center">
+                                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Amazon Gift Card</h3>
+                                    <p class="text-gray-600 mb-4">Get a $50 Amazon gift card when you install our extension</p>
+                                    <div class="bg-amber-100 rounded-lg p-3 text-amber-800 font-medium">
+                                        Limited time offer!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-amber-500 mb-2">$1.2M+</div>
+                    <p class="text-gray-600">Saved by our users</p>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-amber-500 mb-2">250K+</div>
+                    <p class="text-gray-600">Active users</p>
+                </div>
+                <div class="p-6">
+                    <div class="text-4xl font-bold text-amber-500 mb-2">4.8/5</div>
+                    <p class="text-gray-600">User rating</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Powerful Features</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Amazon Rewards makes online shopping more rewarding with these amazing features.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="feature-card bg-white rounded-xl p-6 shadow-md transition duration-300">
+                    <div class="bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Earn Points Automatically</h3>
+                    <p class="text-gray-600 mb-4">Earn points on every Amazon purchase you make. Points accumulate automatically in your account.</p>
+                    <div class="bg-gray-100 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="font-medium">Points Balance</div>
+                            <div class="text-amber-600 font-bold">1,250 pts</div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+                            <div class="bg-amber-500 h-2.5 rounded-full" style="width: 75%"></div>
+                        </div>
+                        <div class="text-xs text-right text-gray-500">750 points to next reward</div>
+                    </div>
+                </div>
+                
+                <!-- Feature 2 -->
+                <div class="feature-card bg-white rounded-xl p-6 shadow-md transition duration-300">
+                    <div class="bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Auto-Apply Coupon Codes</h3>
+                    <p class="text-gray-600 mb-4">Never miss a discount again. Our extension automatically finds and applies the best coupon codes at checkout.</p>
+                    <div class="bg-green-100 rounded-lg p-3 border border-green-200">
+                        <div class="flex items-center text-green-800 font-medium">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            Coupon applied: 15% OFF
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feature 3 -->
+                <div class="feature-card bg-white rounded-xl p-6 shadow-md transition duration-300">
+                    <div class="bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Redeem for Gift Cards</h3>
+                    <p class="text-gray-600 mb-4">Convert your points into Amazon gift cards. Redeem instantly and use them on your next purchase.</p>
+                    <div class="bg-gray-100 rounded-lg p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="font-medium">$10 Gift Card</div>
+                            <div class="text-amber-600 font-bold">1,000 pts</div>
+                        </div>
+                        <button class="w-full bg-amber-500 text-white font-medium py-2 rounded text-sm mt-2">
+                            Redeem Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20 bg-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">How It Works</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Getting started with Amazon Rewards is quick and easy.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-center">
+                    <div class="bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-amber-500">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Install the Extension</h3>
+                    <p class="text-gray-600">Add Amazon Rewards to your browser with just one click. No registration required.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-amber-500">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Shop on Amazon</h3>
+                    <p class="text-gray-600">Continue shopping on Amazon as you normally would. Our extension works in the background.</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="bg-amber-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
+                        <span class="text-2xl font-bold text-amber-500">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Earn & Save</h3>
+                    <p class="text-gray-600">Automatically earn points and save money with coupon codes applied at checkout.</p>
+                </div>
+            </div>
+            
+            <div class="mt-16 text-center">
+                <button id="how-it-works-install-button" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-lg text-lg active:btn-click">
+                    Add to Browser - it's free
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">What Our Users Say</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Join thousands of satisfied Amazon shoppers who are earning rewards and saving money.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl p-6 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-amber-500">
+                            ★★★★★
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"This extension has saved me so much money! I love how it automatically applies coupon codes at checkout. I've earned enough points for two $25 gift cards already."</p>
+                    <div class="flex items-center">
+                        <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                            <span class="font-bold">JD</span>
+                        </div>
+                        <div>
+                            <div class="font-medium">Jessica D.</div>
+                            <div class="text-sm text-gray-500">Verified User</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-amber-500">
+                            ★★★★★
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"I was skeptical at first, but this extension really works! It found a coupon code that saved me 20% on my last purchase, and I'm accumulating points quickly."</p>
+                    <div class="flex items-center">
+                        <div class="bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                            <span class="font-bold">MT</span>
+                        </div>
+                        <div>
+                            <div class="font-medium">Michael T.</div>
+                            <div class="text-sm text-gray-500">Verified User</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-xl p-6 shadow-md">
+                    <div class="flex items-center mb-4">
+                        <div class="text-amber-500">
+                            ★★★★★
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-6">"Super easy to use and it works in the background. I don't have to do anything special and I'm saving money on almost every Amazon purchase. Highly recommend!"</p>
+                    <div class="flex items-center">
+                        <div class="bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                            <span class="font-bold">AL</span>
+                        </div>
+                        <div>
+                            <div class="font-medium">Amanda L.</div>
+                            <div class="text-sm text-gray-500">Verified User</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 bg-white">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">Got questions? We've got answers.</p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="mb-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-bold mb-2">Is Amazon Rewards free to use?</h3>
+                    <p class="text-gray-600">Yes, Amazon Rewards is completely free to install and use. There are no hidden fees or subscriptions.</p>
+                </div>
+                
+                <div class="mb-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-bold mb-2">How do I earn points?</h3>
+                    <p class="text-gray-600">You automatically earn points on every Amazon purchase you make. The number of points depends on the purchase amount.</p>
+                </div>
+                
+                <div class="mb-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-bold mb-2">How many points do I need for a gift card?</h3>
+                    <p class="text-gray-600">1,000 points can be redeemed for a $10 Amazon gift card. 2,500 points for a $25 gift card, and 5,000 points for a $50 gift card.</p>
+                </div>
+                
+                <div class="mb-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-bold mb-2">How long does it take to get my points?</h3>
+                    <p class="text-gray-600">Points are typically credited to your account within a few hours after your purchase. For larger orders, it may take up to 24 hours for the points to appear.</p>
+                </div>
+                
+                <div class="mb-6 bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-bold mb-2">Is my data safe?</h3>
+                    <p class="text-gray-600">We take privacy seriously. Amazon Rewards only accesses the data necessary to provide its services and never sells your personal information to third parties.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <h3 class="text-xl font-bold mb-2">Which browsers are supported?</h3>
+                    <p class="text-gray-600">Amazon Rewards is available for Chrome, Firefox, and Edge.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 hero-gradient text-white">
+        <div class="container mx-auto px-4 md:px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-6">Start Saving Today</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Join thousands of smart shoppers who are earning rewards and saving money on their Amazon purchases.</p>
+            <button id="final-install-button" class="bg-white text-amber-500 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg transition duration-300 shadow-lg text-lg active:btn-click">
+                Add to Browser - it's free
+            </button>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-4 md:px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="text-xl font-bold">Amazon Rewards</span>
+                    </div>
+                    <p class="text-gray-400">Earn points, save money, and get rewarded for your Amazon shopping.</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#features" class="text-gray-400 hover:text-amber-500 transition">Features</a></li>
+                        <li><a href="#how-it-works" class="text-gray-400 hover:text-amber-500 transition">How It Works</a></li>
+                        <li><a href="#faq" class="text-gray-400 hover:text-amber-500 transition">FAQ</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-amber-500 transition">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-amber-500 transition">Terms of Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-amber-500 transition">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Contact</h3>
+                    <ul class="space-y-2">
+                        <li class="text-gray-400">support@amazonrewards.com</li>
+                        <li class="text-gray-400">1-800-REWARDS</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+                <p>&copy; 2023 Amazon Rewards. All rights reserved.</p>
+                <p class="mt-2 text-sm">Amazon Rewards is not affiliated with Amazon.com, Inc.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Check for UTM campaign parameter
+        function checkForCampaign() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('utm_campaign') === 'gift-50';
+        }
+        
+        // Detect browser and update install button text
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            let browserName = "Browser";
+            
+            // More accurate browser detection
+            if (userAgent.indexOf("Firefox") !== -1) {
+                browserName = "Firefox";
+            } else if (userAgent.indexOf("SamsungBrowser") !== -1) {
+                browserName = "Samsung Browser";
+            } else if (userAgent.indexOf("Opera") !== -1 || userAgent.indexOf("OPR") !== -1) {
+                browserName = "Opera";
+            } else if (userAgent.indexOf("Edg") !== -1) {
+                browserName = "Edge";
+            } else if (userAgent.indexOf("Chrome") !== -1) {
+                browserName = "Chrome";
+            } else if (userAgent.indexOf("Safari") !== -1) {
+                browserName = "Safari";
+            }
+            
+            // Check if we're in the gift-50 campaign
+            const isGiftCampaign = checkForCampaign();
+            
+            // Update hero heading if in gift campaign
+            if (isGiftCampaign) {
+                const heroHeading = document.getElementById("hero-heading");
+                if (heroHeading) {
+                    heroHeading.textContent = "Get a $50 Amazon gift card when you get the extension";
+                }
+                
+                // Show gift card and hide default content
+                const defaultContent = document.querySelector("#hero-right-content > .relative");
+                const giftCardContainer = document.getElementById("gift-card-container");
+                
+                if (defaultContent && giftCardContainer) {
+                    defaultContent.classList.add("hidden");
+                    giftCardContainer.classList.remove("hidden");
+                }
+            }
+            
+            // Update all install buttons with the detected browser name
+            const installButtons = [
+                document.getElementById("install-button"),
+                document.getElementById("hero-install-button"),
+                document.getElementById("how-it-works-install-button"),
+                document.getElementById("final-install-button")
+            ];
+            
+            installButtons.forEach((button, index) => {
+                if (button) {
+                    // For header button, change text when in gift campaign
+                    if (index === 0 && isGiftCampaign) {
+                        button.textContent = `Add to ${browserName} - get a $50 gift card`;
+                    }
+                    // For hero button, always keep the "it's free" text
+                    else if (index === 1) {
+                        button.textContent = `Add to ${browserName} - it's free`;
+                    } 
+                    // For other buttons, change text when in gift campaign
+                    else if (isGiftCampaign) {
+                        button.textContent = `Add to ${browserName} - get a $50 gift card`;
+                    } else {
+                        button.textContent = `Add to ${browserName} - it's free`;
+                    }
+                }
+            });
+            
+            // Debug info to verify detection
+            console.log("Detected browser: " + browserName);
+            console.log("Gift campaign: " + isGiftCampaign);
+        }
+        
+        // Add click effect to all buttons except Redeem Now
+        function addButtonClickEffects() {
+            const buttons = document.querySelectorAll('button:not(.w-full)');
+            buttons.forEach(button => {
+                button.addEventListener('mousedown', function() {
+                    this.classList.add('btn-click');
+                });
+                button.addEventListener('mouseup', function() {
+                    this.classList.remove('btn-click');
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.classList.remove('btn-click');
+                });
+            });
+        }
+        
+        // Add tilt effect to gift card
+        function addGiftCardTiltEffect() {
+            const giftCard = document.querySelector('.gift-card');
+            if (!giftCard) return;
+            
+            giftCard.addEventListener('mousemove', function(e) {
+                const cardRect = giftCard.getBoundingClientRect();
+                const cardCenterX = cardRect.left + cardRect.width / 2;
+                const cardCenterY = cardRect.top + cardRect.height / 2;
+                
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                
+                // Calculate the tilt angle (max 15 degrees)
+                const tiltX = ((mouseY - cardCenterY) / (cardRect.height / 2)) * 10;
+                const tiltY = ((mouseX - cardCenterX) / (cardRect.width / 2)) * -10;
+                
+                // Apply the transform
+                giftCard.querySelector('.gift-card-inner').style.transform = 
+                    `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+            });
+            
+            giftCard.addEventListener('mouseleave', function() {
+                // Reset the transform when mouse leaves
+                giftCard.querySelector('.gift-card-inner').style.transform = 
+                    'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+            });
+        }
+        
+        // Run on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            detectBrowser();
+            addButtonClickEffects();
+            addGiftCardTiltEffect();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'946875fb7311eb66',t:'MTc0ODM3OTgyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
